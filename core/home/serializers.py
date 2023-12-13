@@ -12,7 +12,7 @@ class LoginSerializer(serializers.Serializer):
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ['city', 'id']
+        fields = ['city']
 class PeopleSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     class Meta:
