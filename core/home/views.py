@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Person, Address
-from .serializers import PeopleSerializer
+from .serializers import PeopleSerializer, LoginSerializer
 
 # Create your views here.
 @api_view(['GET', 'POST', 'PUT'])
@@ -24,6 +24,16 @@ def index(request):
         print("YOU HIT A PUT METHOD.")
         return Response(courses)
     
+@api_view(['POST'])
+def login(request):
+    data = request.data
+    serializer = LoginSerializer(data=data)
+    if serializer.is_valid():
+        data = serializer.data
+        print(data)
+        return Response({'message':'success'})
+    return Response(serializer.errors)
+
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def person(request):
     if request.method == 'GET':

@@ -4,6 +4,11 @@ from .models import Person, Address
 
 
 import re
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+   
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
