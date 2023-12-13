@@ -1,15 +1,19 @@
 from rest_framework import serializers
-from .models import Person
+from .models import Person, Address
 
 
 
 import re
-
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ['city', 'id']
 class PeopleSerializer(serializers.ModelSerializer):
+    address = AddressSerializer()
     class Meta:
         model = Person
         fields = '__all__'
-        
+        # depth = 1
 
     def validate(self, data):
         age = data.get('age')
