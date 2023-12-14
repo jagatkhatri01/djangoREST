@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Person, Address
+from django.contrib.auth.models import User
 
 
 
@@ -8,6 +9,29 @@ import re
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+class RegisterSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        if data['username']:
+            if User.objects.filter(username=data['username']).exists():
+                raise serializers.ValidationError("Username already exists")
+            
+        if data['email']:
+            if User.objects.filter(email=data['email']).exists():
+                raise serializers.ValidationError("Email already exists")
+        print(data)
+        return data
+    
+    def create(self, validated_data):
+        user = User.objects.create(username=validated_data['username'], email = validated_data['email'])
+        user.set_password(validated_data['password'])
+        print(validated_data)
+        return validated_data
+
    
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
