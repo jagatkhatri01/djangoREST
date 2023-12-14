@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from .models import Person, Address
 from .serializers import PeopleSerializer, LoginSerializer
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, viewsets
 # Create your views here.
 @api_view(['GET', 'POST', 'PUT'])
 def index(request):
@@ -65,7 +65,7 @@ class ListUser(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-     
+   
     def delete(self, request):
         data = request.data
         person_id = data.get('id')
@@ -118,3 +118,21 @@ def person(request):
         data = request.data
         objs = Person.objects.get(id=data['id'])
         objs.delete()
+
+
+class PeopleViewSet(viewsets.ModelViewSet):
+    serializer_class = PeopleSerializer
+    queryset = Person.objects.all()
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        queryset = Person.objects.all()
+
+        if search:
+            queryset = queryset.filter(first_name__startswith=search)
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = PeopleSerializer(queryset, many=True)
+        return Response({'status': 200, 'data': serializer.data})
